@@ -1,0 +1,56 @@
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'idea' // optional (to generate IntelliJ IDEA project files)
+
+sourceCompatibility = "17.PREVIEW"
+targetCompatibility = JavaVersion.VERSION_17
+
+group = 'net.edroskos'
+version = '0.1-SNAPSHOT'
+// mainClassName = 'net.edroskos.spaceeconomy'
+
+jar {
+  manifest {
+    attributes 'Implementation-Title': 'Economy Testbed', 'Implementation-Version': "${version}", 'Implementation-Vendor': 'Ed Roskos'
+  }
+}
+
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+  manifest {
+    attributes 'Implementation-Title': 'Ed Roskos Economy Testbed',
+               'Implementation-Version': version,
+        	   'Main-Class': 'net.edroskos.Main'
+    }
+    archiveBaseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+compileJava {
+    options.compilerArgs += ["-parameters", "--enable-preview"]
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.typesafe:config:1.4.1'
+    implementation 'com.google.inject:guice:5.0.1'
+    implementation 'com.google.guava:guava:30.1.1-jre'
+    implementation 'org.jetbrains:annotations:20.1.0'
+
+    testImplementation(platform('org.junit:junit-bom:5.7.2'))
+    testImplementation('org.junit.jupiter:junit-jupiter')
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
