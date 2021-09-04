@@ -10,7 +10,7 @@ import java.util.Objects;
  * A percentage, which is restricted to a value between 0 and 100.
  */
 public final class Percent {
-  private final Double value;
+  private final double value;
 
   private static final RangeValidator<Double> validator = RangeValidator.bounded(
       new ClosedRangeEndpoint<Double>(0.0),
@@ -18,17 +18,25 @@ public final class Percent {
       Comparator.<Double>naturalOrder()
   );
 
-  private Percent(Double value) {
+  private Percent(double value) {
     this.value = value;
   }
 
-  public Double value() { return value; }
+  public double value() { return value; }
+
+  /**
+   * Factory method similar to the overloaded version but without a description.
+   */
+  public static Percent of(double value) {
+    return of(value, null);
+  }
 
   /**
    * Factory method given the <code>value</code> for the percentage, from 0 to 100.  If the value is not on this
-   * range, an {@link IllegalArgumentException} is thrown.
+   * range, an {@link IllegalArgumentException} is thrown, using <code>description</code> to help form the
+   * message (if not <code>null</code>).
    */
-  public static Percent of(Double value, String description) {
+  public static Percent of(double value, String description) {
     if (!validator.satisfies(value)) {
       var desc = description == null ? "" : (description + ": ");
       throw new IllegalArgumentException(desc + "Percent must be between 0 and 100: " + value);
@@ -43,7 +51,7 @@ public final class Percent {
     if (o == null || getClass() != o.getClass())
       return false;
     Percent percent = (Percent) o;
-    return value.equals(percent.value);
+    return value == percent.value;
   }
 
   @Override
