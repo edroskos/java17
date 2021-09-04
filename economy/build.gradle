@@ -32,6 +32,10 @@ compileJava {
     options.compilerArgs += ["-parameters", "--enable-preview"]
 }
 
+compileTestJava {
+    options.compilerArgs += ["-parameters", "--enable-preview"]
+}
+
 repositories {
     mavenLocal()
     mavenCentral()
@@ -48,6 +52,7 @@ dependencies {
 }
 
 test {
+    jvmArgs(['--enable-preview'])
     useJUnitPlatform()
     testLogging {
         events "passed", "skipped", "failed"
