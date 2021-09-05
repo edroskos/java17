@@ -20,7 +20,6 @@ public class PercentTest {
       Percent.of(100.1, "The Big Test");
     });
     assertTrue(iae2.getMessage().startsWith("The Big Test: Percent must be between 0 and 100:"));
-
   }
 
 }

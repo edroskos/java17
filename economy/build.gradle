@@ -4,7 +4,7 @@ apply plugin: 'application'
 apply plugin: 'idea' // optional (to generate IntelliJ IDEA project files)
 
 sourceCompatibility = "17.PREVIEW"
-targetCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17_PREVIEW
 
 group = 'net.edroskos'
 version = '0.1-SNAPSHOT'
