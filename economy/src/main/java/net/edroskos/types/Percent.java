@@ -51,7 +51,7 @@ public final class Percent {
     if (o == null || getClass() != o.getClass())
       return false;
     Percent percent = (Percent) o;
-    return value == percent.value;
+    return Double.compare(percent.value, value) == 0;
   }
 
   @Override
