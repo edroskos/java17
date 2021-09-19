@@ -1,5 +1,6 @@
 package net.edroskos.fp;
 
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -33,8 +34,8 @@ public sealed abstract class Either<A, B>
    */
   public Either<B, A> swap() {
     return switch (this) {
-      case Left<A, B> l -> new Right<>(l.value());
-      case Right<A, B> r -> new Left<>(r.value());
+      case Left<A, B> l -> new Right<B, A>(l.value());
+      case Right<A, B> r -> new Left<B, A>(r.value());
     };
   }
 
@@ -128,8 +129,8 @@ public sealed abstract class Either<A, B>
    */
   public <C> Either<A, C> map(Function<? super B, ? extends C> fn) {
     return switch (this) {
-      case Left<A, B> l -> new Left<>(l.value());   /* works around warning of unsafe cast */
-      case Right<A, B> r -> new Right<>(fn.apply(r.value()));
+      case Left<A, B> l -> new Left<A, C>(l.value());   /* works around warning of unsafe cast */
+      case Right<A, B> r -> new Right<A, C>(fn.apply(r.value()));
     };
   }
 
@@ -140,7 +141,7 @@ public sealed abstract class Either<A, B>
    */
   public Either<A, B> filterOrElse(Predicate<? super B> predicate, A zero) {
     return switch (this) {
-      case Right<A, B> r && !predicate.test(r.value()) -> new Left(zero);
+      case Right<A, B> r && !predicate.test(r.value()) -> new Left<A, B>(zero);
       default -> this;
     };
   }

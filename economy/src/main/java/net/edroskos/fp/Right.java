@@ -9,10 +9,6 @@ public final class Right<A, B> extends Either<A, B> {
     this.value = value;
   }
 
-  static public Either<A, B> of(B value) {
-    return new Right(value);
-  }
-
   public B value() {
     return value;
   }
