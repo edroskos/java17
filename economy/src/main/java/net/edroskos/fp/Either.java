@@ -34,18 +34,17 @@ public sealed abstract class Either<A, B>
    */
   public Either<B, A> swap() {
     return switch (this) {
-      case Left<A, B> l -> new Right<B, A>(l.value());
-      case Right<A, B> r -> new Left<B, A>(r.value());
+      case Left<A, B> l -> new Right<>(l.value());
+      case Right<A, B> r -> new Left<>(r.value());
     };
   }
 
   /**
-   * Executes <code>fn</code> on our value if we are a <code>Right</code>.  The generic parameter <code>U</code> is only
-   * used to specify the function type and is otherwise ignored.
+   * Executes <code>fn</code> on our value if we are a <code>Right</code>.
    */
-  public <U> void foreach(Function<? super B, ? extends U> fn) {
+  public void foreach(Function<? super B, ?> fn) {
     switch (this) {
-      case Left<A, B> l:
+      case Left<A, B> ignore:
         break;
       case Right<A, B> r:
         fn.apply(r.value());

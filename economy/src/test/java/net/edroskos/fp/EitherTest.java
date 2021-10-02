@@ -2,9 +2,39 @@ package net.edroskos.fp;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.function.Function;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class EitherTest {
+
+  static class Dwelling {
+    public boolean hasPet() {
+      return false;
+    }
+  }
+
+  static class House extends Dwelling {
+    private final Animal pet;
+
+    House(Animal pet) {
+      this.pet = pet;
+    }
+
+    @Override
+    public boolean hasPet() {
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "House w/pet=" + pet.toString();
+    }
+  }
 
   static class Animal {
     private final String typeName;
@@ -15,12 +45,13 @@ public class EitherTest {
       this.typeName = typeName;
     }
 
-    String getTypeName() {
-      return typeName;
+    public String getPetName() {
+      return petName;
     }
 
-    String getPetName() {
-      return petName;
+    @Override
+    public String toString() {
+      return "Animal(" + typeName + ":" + petName;
     }
   }
 
@@ -46,35 +77,55 @@ public class EitherTest {
     }
   }
 
+  static class ShibaInu extends Dog {
+    ShibaInu(String petName) {
+      super(petName, "Shiba Inu");
+    }
+  }
+
+  static Corgi mooie = new Corgi("Mooie");
+  static Corgi junior = new Corgi("Junior");
+  static ShibaInu inu = new ShibaInu("Inu");
+  static Either<Exception, Corgi> mooieRightEither = new Right<>(mooie);
+  static Either<Corgi, Double> mooieLeftEither = new Left<>(mooie);
+  static Function<Exception, Dwelling> exceptionToHouseFn = ex -> new House(inu);
+  static Function<Double, Dwelling> doubleToHouseFn = d -> new House(inu);
+
   @Test
   void testBasicRight() {
-    Corgi mooie = new Corgi("Mooie");
-    Corgi junior = new Corgi("Junior");
-    Either<Exception, Animal> either = new Right<>(mooie);
-    assertTrue(either.isRight());
-    assertFalse(either.isLeft());
-    assertEquals(new Right<>(mooie), new Right<>(mooie));
-    assertNotEquals(new Right<>(mooie), new Right<>(junior));
-    switch (either) {
-      case Right<Exception, Animal> r -> assertEquals(r.value().getPetName(), "Mooie");
-      case Left<Exception, Animal> ignore -> fail("Expected a 'right'");
+    assertTrue(mooieRightEither.isRight());
+    assertFalse(mooieRightEither.isLeft());
+    assertEquals(mooieRightEither, new Right<>(mooie));
+    assertNotEquals(mooieRightEither, new Right<>(junior));
+    switch (mooieRightEither) {
+      case Right<Exception, ? extends Animal> r -> assertEquals(r.value().getPetName(), "Mooie");
+      case Left<Exception, ? extends Animal> ignore -> fail("Expected a 'right'");
     }
   }
 
   @Test
   void testBasicLeft() {
-    Corgi mooie = new Corgi("Mooie");
-    Corgi junior = new Corgi("Junior");
-    Either<Animal, Double> either = new Left<>(mooie);
-    assertFalse(either.isRight());
-    assertTrue(either.isLeft());
+    assertFalse(mooieLeftEither.isRight());
+    assertTrue(mooieLeftEither.isLeft());
     assertEquals(new Left<>(mooie), new Left<>(mooie));
     assertNotEquals(new Left<>(mooie), new Left<>(junior));
-    switch (either) {
-      case Right<Animal, Double> ignore -> fail("Expected a 'left'");
-      case Left<Animal, Double> l -> assertEquals(l.value().getPetName(), "Mooie");
+    switch (mooieLeftEither) {
+      case Right<? extends Animal, Double> ignore -> fail("Expected a 'left'");
+      case Left<? extends Animal, Double> l -> assertEquals(l.value().getPetName(), "Mooie");
     }
   }
 
+  @Test
+  void testFoldRight() {
+    Dwelling dwelling = mooieRightEither.fold(exceptionToHouseFn, House::new);
+    assertTrue(dwelling instanceof House);
+    assertEquals(((House) dwelling).pet, mooie);
+  }
 
+  @Test
+  void testFoldLeft() {
+    Dwelling dwelling = mooieLeftEither.fold(House::new, doubleToHouseFn);
+    assertTrue(dwelling instanceof House);
+    assertEquals(((House) dwelling).pet, mooie);
+  }
 }
