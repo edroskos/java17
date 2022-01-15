@@ -1,5 +1,7 @@
 package net.edroskos.collection;
 
+import java.util.function.Function;
+
 /**
  * Represents an empty <code>List</code>.
  *
@@ -14,6 +16,11 @@ public final class Nil<E> extends List<E> {
   @Override
   public int size() {
     return 0;
+  }
+
+  @Override
+  public <B> List<B> map(Function<? super E, ? extends B> fn) {
+    return new Nil<>();
   }
 
   @Override

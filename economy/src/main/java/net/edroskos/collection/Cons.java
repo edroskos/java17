@@ -1,6 +1,7 @@
 package net.edroskos.collection;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * Represents a non-empty <code>List</code> as a linked list node that knows a single element in the linked list.
@@ -32,6 +33,11 @@ public final class Cons<E> extends List<E> {
   @Override
   public int size() {
     return 1+tailList.size();
+  }
+
+  @Override
+  public <B> List<B> map(Function<? super E, ? extends B> fn) {
+    return new Cons<>(fn.apply(head), tailList.map(fn));
   }
 
   @Override
